@@ -1,0 +1,2 @@
+serial_number,hostname,outside_ip,inside_ip,gateway_ip,mgmt_ip
+123456,ASA5506-A,192.168.10.2,10.97.164.1,192.168.10.1,192.168.10.10
