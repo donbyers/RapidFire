@@ -2,7 +2,7 @@ import json
 import sys
 import requests
 
-server = "https://10.82.91.71"
+server = "https://192.168.10.15"
 username = "api"
 if len(sys.argv) > 1:
     username = sys.argv[1]
@@ -102,8 +102,8 @@ if (url[-1] == '/'):
 # What to change in this sample JSON data , hostname, name, natID (if sensor behind the nat) or use just the regkey (created when device is configured). Do a "get" on the accesspolicy to obtain id of accessPolicyUUID!
 
 post_data = {
-	"name": "10.82.78.253",
-	"hostName": "10.82.78.253",
+	"name": "192.168.10.10",
+	"hostName": "192.168.10.10",
 	"regKey": "C1sc0123",
 	"type": "Device",
 	"license_caps": [
