@@ -2,7 +2,7 @@ import json
 import sys
 import requests
 
-server = "https://192.168.10.15"
+server = "https://192.168.10.20"
 username = "api"
 if len(sys.argv) > 1:
     username = sys.argv[1]
