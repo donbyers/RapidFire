@@ -2,7 +2,7 @@ import json
 import sys
 import requests
 
-server = "https://10.82.91.71"
+server = "https://192.168.10.20"
 username = "api"
 password = "C1sc0123"
 
@@ -56,7 +56,7 @@ def fmc_api_post(api_url,post_obj):
 		if r: r.close()
 	return json_resp
 
-def fmc_api_get(api_url,get_query):
+def fmc_api_get(api_url):
 	try:
 		# REST call with SSL verification turned off: 
 		r = requests.get(api_url, headers=headers, verify=False)
@@ -78,7 +78,7 @@ def fmc_api_get(api_url,get_query):
 	return json_resp
 
 # GET ACCESS POLICY OPERATION
-api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name=DRC-AccessPolicy"
+api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name=DRC-Access-Policy"
 url = server + api_path
 if (url[-1] == '/'):
 	url = url[:-1]
@@ -102,8 +102,8 @@ if (url[-1] == '/'):
 	url = url[:-1]
 
 post_data = {
-	"name": "10.82.78.253",
-	"hostName": "10.82.78.253",
+	"name": "192.168.10.10",
+	"hostName": "192.168.10.10",
 	"regKey": "C1sc0123",
 	"type": "Device",
 	"license_caps": [
