@@ -35,7 +35,7 @@ print("Calling subprocess...")
 #Creating screen session to consoled device
 subprocess.call(["screen","-d","-m","-S","cisco","/dev/ttyUSB0"])
 #applying hostname and IP information to device and starting session with sfr module
-subprocess.call(["screen","-S","cisco","-X","stuff","no\r\ren\r\rconf t\rhostname "+hostname+"\rinterface man 1/1\rno shut\rnameif management\rinterface gigabitethernet 1/1\rno shut\rnameif outside\rip address "+outside_ip+" "+outside_mask+"\r\rinterface gigabitethernet 1/2\rno shut\rnameif inside\rip address "+inside_ip+" "+inside_mask+"\rexit\rroute outside 0.0.0.0 0.0.0.0 "+gateway_ip+"\rexit\rsession sfr console\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff","no\r\ren\r\rconf t\rhostname "+hostname+"\rinterface man 1/1\rno shut\rnameif management\rinterface gigabitethernet 1/1\rno shut\rnameif outside\rip address "+outside_ip+" "+outside_mask+"\r\rinterface gigabitethernet 1/2\rno shut\rnameif inside\rip address "+inside_ip+" "+inside_mask+"\rexit\rroute outside 0.0.0.0 0.0.0.0 "+gateway_ip+"\raccess-list sfr extended permit ip any any\rclass-map sfr\rmatch access-list sfr\rpolicy-map global_policy\rclass sfr\rsfr fail-open\rexit\rsession sfr console\r"],stdout=subprocess.PIPE)
 print("Waiting 30 sec to let SFR module load")
 time.sleep(30)
 #logging in as admin
