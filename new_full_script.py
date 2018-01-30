@@ -76,11 +76,12 @@ subprocess.call(["screen","-S","cisco","-X","stuff","cisco.com\r"],stdout=subpro
 time.sleep(1)
 #accepting agreeing to complete initial setup
 subprocess.call(["screen","-S","cisco","-X","stuff","\r\r"],stdout=subprocess.PIPE)
+print("Sleeping 2.5 Minutes to allow SFR module to apply settings before configuring FMC as the Manager")
 time.sleep(160)
 #configuring IP of FMC manager device to register with
 subprocess.call(["screen","-S","cisco","-X","stuff","configure manager add 192.168.10.20 C1sc0123\r"],stdout=subprocess.PIPE)
 
-print("Sleeping 30 sec before API calls")
+print("Sleeping 30 Sec before API calls")
 
 time.sleep(30)
 
