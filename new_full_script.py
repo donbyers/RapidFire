@@ -184,7 +184,7 @@ if (url[-1] == '/'):
 	url = url[:-1]
 
 post_data = {
-	"name": "192.168.10.10",
+	"name": "Houston",
 	"hostName": "192.168.10.10",
 	"regKey": "C1sc0123",
 	"type": "Device",
