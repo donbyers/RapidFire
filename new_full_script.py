@@ -5,9 +5,12 @@ import time
 import requests
 import json
 
-#Getting serial number of ASA device from user input
-serial_num = input("Enter Serial Number: ")
+print("WELCOME TO THE POWER OF RAPIDFIRE!!!")
 
+#Getting serial number of ASA device from user input
+serial_num = input("Enter Serial Number of ASA Device: ")
+
+#Searching parameters.csv for specified Serial Number
 with open('parameters.csv',newline='') as csvfile:
     reader = csv.reader(csvfile)
     found = 0
@@ -15,7 +18,7 @@ with open('parameters.csv',newline='') as csvfile:
     for row in reader:
         if row[0]==serial_num:
             found = 1
-            print("FOUND!....",row)
+            print("FOUND!...",row)
 
             hostname = row[1]
             outside_ip = row[2]
@@ -25,69 +28,109 @@ with open('parameters.csv',newline='') as csvfile:
             gateway_ip = row[6]
             gateway_mask = row[7]
             sfr_ip = row[8]
+			sfr_mask = row[9]
+			sfr_domain = row[10]
+			sfr_password = row[11]
+			sfr_device_name = row[12]
+			fmc_ip = row[13]
+			fmc_user = row[14]
+			fmc_password = row[15]
+			fmc_devicegroup_name = row[16]
+			fmc_policy_name = row[17]
             break
 
     if not found:
         print("Serial number was not found in csv... Please re-run this script to try again")
         sys.exit()
 
-print("Calling subprocess...")
+print("Creating screen session to ASA Device...")
 #Creating screen session to consoled device
 subprocess.call(["screen","-d","-m","-S","cisco","/dev/ttyUSB0"])
-#applying hostname and IP information to device and starting session with sfr module
+
+#Applying hostname and IP information to device and starting session with sfr module
+print("Applying initial configuration to ASA...")
 subprocess.call(["screen","-S","cisco","-X","stuff","no\r\ren\r\rconf t\rhostname "+hostname+"\rinterface man 1/1\rno shut\rnameif management\rinterface gigabitethernet 1/1\rno shut\rnameif outside\rip address "+outside_ip+" "+outside_mask+"\r\rinterface gigabitethernet 1/2\rno shut\rnameif inside\rip address "+inside_ip+" "+inside_mask+"\rexit\rroute outside 0.0.0.0 0.0.0.0 "+gateway_ip+"\raccess-list sfr extended permit ip any any\rclass-map sfr\rmatch access-list sfr\rpolicy-map global_policy\rclass sfr\rsfr fail-open\rexit\rsession sfr console\r"],stdout=subprocess.PIPE)
-print("Waiting 30 sec to let SFR module load")
+
+#Waiting to let SFR module load
+print("Waiting 30 sec to let SFR module load...")
 time.sleep(30)
-#logging in as admin
+
+#Logging in as admin
+print("Logging into sfr with default admin credentials...")
 subprocess.call(["screen","-S","cisco","-X","stuff","\r\radmin\r"],stdout=subprocess.PIPE)
 time.sleep(2)
-#providing default admin password
+#Providing default admin password
 subprocess.call(["screen","-S","cisco","-X","stuff","Admin123\r"],stdout=subprocess.PIPE)
 time.sleep(10)
-#return to start EULA agreement
+
+#Return to start EULA agreement
+print("Starting display of EULA agreement...")
 subprocess.call(["screen","-S","cisco","-X","stuff","\r"],stdout=subprocess.PIPE)
 time.sleep(2)
-#skipping scroll through EULA agreement
+
+#Skipping scroll through EULA agreement
+print("Skipping EULA agreement...")
 subprocess.call(["screen","-S","cisco","-X","stuff","q"],stdout=subprocess.PIPE)
 time.sleep(2)
+
 #agreeing to EULA agreement
+print("Agreeing to EULA...")
 subprocess.call(["screen","-S","cisco","-X","stuff","YES\r"],stdout=subprocess.PIPE)
 time.sleep(2)
+
 #providing new password to sfr module
-subprocess.call(["screen","-S","cisco","-X","stuff","C1sc0123\rC1sc0123\r"],stdout=subprocess.PIPE)
+print("Providing new admin password...")
+subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_password+"\r"+sfr_password+"\r"],stdout=subprocess.PIPE)
 time.sleep(10)
-#accepting default config values
+
+#Accepting default config values
+print("Accepting default config values...")
 subprocess.call(["screen","-S","cisco","-X","stuff","\r\r\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#providing mgmt IP to sfr module
+
+#Providing mgmt IP to sfr module
+print("Providing Mgmt IP to sfr module...")
 subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_ip+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#providing subnet value for sfr module
-subprocess.call(["screen","-S","cisco","-X","stuff","255.255.255.0\r"],stdout=subprocess.PIPE)
+
+#Providing subnet value for sfr module
+print("Providing sfr subnet mask...")
+subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_mask+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#providing gateway IP for sfr module
+
+#Providing gateway IP for sfr module
+print("Providing gateway IP for sfr module...")
 subprocess.call(["screen","-S","cisco","-X","stuff",""+gateway_ip+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#providing DNS IP for sfr module
+
+#Providing DNS IP for sfr module
+print("Providing DNS IP for sfr module...")
 subprocess.call(["screen","-S","cisco","-X","stuff","\r8.8.8.8\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#providing domain name for sfr module
-subprocess.call(["screen","-S","cisco","-X","stuff","cisco.com\r"],stdout=subprocess.PIPE)
+
+#Providing domain name for sfr module
+print("Providing domain name for sfr module...")
+subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_domain+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
-#accepting agreeing to complete initial setup
+
+#Accepting agreeing to defaults to complete initial setup
+print("Accepting defaults to complete initial setup...")
 subprocess.call(["screen","-S","cisco","-X","stuff","\r\r"],stdout=subprocess.PIPE)
-print("Sleeping 2.5 Minutes to allow SFR module to apply settings before configuring FMC as the Manager")
+
+#Sleeping 2.5 Minutes to allow SFR module to apply settings before configuring FMC as the Manager
+print("Sleeping 2.5 Minutes to allow SFR module to apply settings before configuring FMC as the Manager...")
 time.sleep(160)
-#configuring IP of FMC manager device to register with
-subprocess.call(["screen","-S","cisco","-X","stuff","configure manager add 192.168.10.20 C1sc0123\r"],stdout=subprocess.PIPE)
 
-print("Sleeping 30 Sec before API calls")
+#Configuring IP of FMC manager device to register with
+print("Configuring IP of FMC manager device to register with...")
+subprocess.call(["screen","-S","cisco","-X","stuff","configure manager add "+fmc_ip+" C1sc0123\r"],stdout=subprocess.PIPE)
 
+print("Sleeping 30 Sec before API calls...")
 time.sleep(30)
 
-server = "https://192.168.10.20"
-username = "api"
-password = "C1sc0123"
+server = "https://"+fmc_ip
+username = fmc_user
+password = fmc_password
 
 if len(sys.argv) > 1:
     username = sys.argv[1]
@@ -160,11 +203,14 @@ def fmc_api_get(api_url):
 		if r : r.close()	
 	return json_resp
 
+print("Starting API Calls...")
+
 # GET ACCESS POLICY OPERATION
-api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name=DRC-Access-Policy"
+api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name="+fmc_policy_name
 url = server + api_path
 if (url[-1] == '/'):
 	url = url[:-1]
+print("GETting ID of Access Policy "+fmc_policy_name+"...")
 policy_obj=fmc_api_get(url)
 policy_id=policy_obj['items'][0]['id']
 
@@ -174,8 +220,9 @@ url = server + api_path
 if (url[-1] == '/'):
     url = url[:-1]
 post_data = {
-	"name": "DRC",
+	"name": fmc_devicegroup_name,
 }
+print("POSTing device group " + fmc_devicegroup_name+"...")
 group_obj = fmc_api_post(url,post_data)
 
 # POST/CREATE DEVICE OPERATION
@@ -185,8 +232,8 @@ if (url[-1] == '/'):
 	url = url[:-1]
 
 post_data = {
-	"name": "Houston",
-	"hostName": "192.168.10.10",
+	"name": sfr_device_name,
+	"hostName": sfr_ip,
 	"regKey": "C1sc0123",
 	"type": "Device",
 	"license_caps": [
@@ -203,4 +250,7 @@ post_data = {
 		"id": policy_id
 	}
 }
+print("POSTing device " + sfr_device_name + " and adding to group " + fmc_devicegroup_name + " and assigning to policy " + fmc_policy_name + "...")
 device_obj = fmc_api_post(url,post_data)
+
+print("YOU HAVE JUST WITNESSED THE POWER OF RAPIDFIRE... SHOCK AND AWE EFFECTS MAY OR MAY NOT SUBSIDE BY THE TIME THE FMC FINISHES ITS PART OVER THE NEXT 10-15 MINUTES")
