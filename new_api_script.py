@@ -18,7 +18,7 @@ with open('parameters.csv',newline='') as csvfile:
             found = 1
             print("FOUND!...",row)
 
-            hostname = row[1] #Houston-ASA5506
+            hostname = row[1]
             outside_ip = row[2] 
             outside_mask = row[3]
             inside_ip = row[4]
@@ -126,16 +126,29 @@ print("GETting ID of Access Policy "+fmc_policy_name+"...")
 policy_obj=fmc_api_get(url)
 policy_id=policy_obj['items'][0]['id']
 
-# POST/CREATE DEVICE GROUP OPERATION
-api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devicegroups/devicegrouprecords"
+#SEARCH FOR PROVIDED DEVICE GROUP 
+api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devicegroups/devicegrouprecords?name=" + fmc_devicegroup_name
 url = server + api_path
 if (url[-1] == '/'):
-    url = url[:-1]
-post_data = {
-	"name": fmc_devicegroup_name,
-}
-print("POSTing device group " + fmc_devicegroup_name+"...")
-group_obj = fmc_api_post(url,post_data)
+	url = url[:-1]
+print("Searching for device group " + fmc_devicegroup_name + "...")
+group_search=fmc_api_get(url)
+if(group_search['items']):
+	print("FOUND device group with name of " + fmc_devicegroup_name)
+	device_group_id = group_search['items'][0]['id']
+else:
+	print("Provided device group name NOT FOUND, creating device group " + fmc_devicegroup_name)
+	# POST/CREATE DEVICE GROUP OPERATION
+	api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devicegroups/devicegrouprecords"
+	url = server + api_path
+	if (url[-1] == '/'):
+		url = url[:-1]
+	post_data = {
+		"name": fmc_devicegroup_name,
+	}
+	print("POSTing device group " + fmc_devicegroup_name+"...")
+	group_obj = fmc_api_post(url,post_data)
+	device_group_id = group_obj['id']
 
 # POST/CREATE DEVICE OPERATION
 api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devices/devicerecords"
@@ -156,7 +169,7 @@ post_data = {
 		"VPN"
 	],
 	"deviceGroup": {
-		"id": group_obj['id']
+		"id": device_group_id
 	},
 	"accessPolicy": {
 		"id": policy_id
