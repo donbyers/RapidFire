@@ -138,7 +138,7 @@ group_search=fmc_api_get(url)
 if(group_search['items']):
 	group_index=0
 	device_group_id=None
-	for(dg in group_search['items']):
+	for dg in group_search['items']:
 		if(dg['name']==fmc_devicegroup_name):
 			print("FOUND device group with name of " + fmc_devicegroup_name)
 			device_group_id = dg['id']
