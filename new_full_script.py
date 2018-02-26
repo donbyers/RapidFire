@@ -20,7 +20,7 @@ with open('parameters.csv',newline='') as csvfile:
             found = 1
             print("FOUND!...",row)
 
-            hostname = row[1] #Houston-ASA5506
+            hostname = row[1]
             outside_ip = row[2] 
             outside_mask = row[3]
             inside_ip = row[4]
@@ -38,7 +38,6 @@ with open('parameters.csv',newline='') as csvfile:
             fmc_devicegroup_name = row[16]
             fmc_policy_name = row[17]
             break
-
     if not found:
         print("Serial number was not found in csv... Please re-run this script to try again")
         sys.exit()
