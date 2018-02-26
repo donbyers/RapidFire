@@ -20,8 +20,8 @@ with open('parameters.csv',newline='') as csvfile:
             found = 1
             print("FOUND!...",row)
 
-            hostname = row[1]
-            outside_ip = row[2]
+            hostname = row[1] #Houston-ASA5506
+            outside_ip = row[2] 
             outside_mask = row[3]
             inside_ip = row[4]
             inside_mask = row[5]

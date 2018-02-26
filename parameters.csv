@@ -1,2 +1,2 @@
 serial_number,hostname,outside_ip,outside_mask,inside_ip,inside_mask,gateway_ip,gateway_mask,sfr_ip,sfr_mask,sfr_domain,sfr_password,sfr_device_name,fmc_ip,fmc_user,fmc_password,fmc_devicegroup_name,fmc_policy_name
-123456,Houston-ASA5506,192.168.10.2,255.255.255.0,10.97.164.1,255.255.255.0,192.168.10.1,255.255.255.0,192.168.10.10,255.255.255.0,fema.net,C1sc0123,Houston,192.168.10.20,api,C1sc0123,DRC,DRC-Access-Policy
+123456,Houston-ASA5506,192.168.10.2,255.255.255.0,10.97.164.1,255.255.255.0,192.168.10.1,255.255.255.0,192.168.10.10,255.255.255.0,cisco.com,C1sc0123,Houston,192.168.10.20,api,C1sc0123,DRC,DRC-Access-Policy

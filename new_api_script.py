@@ -1,10 +1,48 @@
-import json
+import subprocess
+import csv
 import sys
+import time
 import requests
+import json
 
-server = "https://192.168.10.20"
-username = "api"
-password = "C1sc0123"
+#Getting serial number of ASA device from user input
+serial_num = input("Enter Serial Number of ASA Device: ")
+
+#Searching parameters.csv for specified Serial Number
+with open('parameters.csv',newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    found = 0
+	#looping through parameters.csv to find record matching provided serial number
+    for row in reader:
+        if row[0]==serial_num:
+            found = 1
+            print("FOUND!...",row)
+
+            hostname = row[1] #Houston-ASA5506
+            outside_ip = row[2] 
+            outside_mask = row[3]
+            inside_ip = row[4]
+            inside_mask = row[5]
+            gateway_ip = row[6]
+            gateway_mask = row[7]
+            sfr_ip = row[8]
+            sfr_mask = row[9]
+            sfr_domain = row[10]
+            sfr_password = row[11]
+            sfr_device_name = row[12]
+            fmc_ip = row[13]
+            fmc_user = row[14]
+            fmc_password = row[15]
+            fmc_devicegroup_name = row[16]
+            fmc_policy_name = row[17]
+            break
+    if not found:
+        print("Serial number was not found in csv... Please re-run this script to try again")
+        sys.exit()
+
+server = "https://"+fmc_ip
+username = fmc_user
+password = fmc_password
 
 if len(sys.argv) > 1:
     username = sys.argv[1]
@@ -77,33 +115,37 @@ def fmc_api_get(api_url):
 		if r : r.close()	
 	return json_resp
 
+print("Starting API Calls...")
+
 # GET ACCESS POLICY OPERATION
-api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name=DRC-Access-Policy"
+api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies?name="+fmc_policy_name
 url = server + api_path
 if (url[-1] == '/'):
 	url = url[:-1]
+print("GETting ID of Access Policy "+fmc_policy_name+"...")
 policy_obj=fmc_api_get(url)
 policy_id=policy_obj['items'][0]['id']
 
-# POST OPERATION
+# POST/CREATE DEVICE GROUP OPERATION
 api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devicegroups/devicegrouprecords"
 url = server + api_path
 if (url[-1] == '/'):
     url = url[:-1]
 post_data = {
-	"name": "DRC",
+	"name": fmc_devicegroup_name,
 }
+print("POSTing device group " + fmc_devicegroup_name+"...")
 group_obj = fmc_api_post(url,post_data)
 
-# POST OPERATION
+# POST/CREATE DEVICE OPERATION
 api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devices/devicerecords"
 url = server + api_path
 if (url[-1] == '/'):
 	url = url[:-1]
 
 post_data = {
-	"name": "192.168.10.10",
-	"hostName": "192.168.10.10",
+	"name": sfr_device_name,
+	"hostName": sfr_ip,
 	"regKey": "C1sc0123",
 	"type": "Device",
 	"license_caps": [
@@ -120,4 +162,7 @@ post_data = {
 		"id": policy_id
 	}
 }
+print("POSTing device " + sfr_device_name + " and adding to group " + fmc_devicegroup_name + " and assigning to policy " + fmc_policy_name + "...")
 device_obj = fmc_api_post(url,post_data)
+
+print("YOU HAVE JUST WITNESSED THE POWER OF RAPIDFIRE... SHOCK AND AWE EFFECTS MAY OR MAY NOT SUBSIDE BY THE TIME THE FMC FINISHES ITS PART OVER THE NEXT 10-15 MINUTES")
