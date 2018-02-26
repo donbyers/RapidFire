@@ -135,7 +135,7 @@ if (url[-1] == '/'):
 	url = url[:-1]
 print("Searching for device group " + fmc_devicegroup_name + "...")
 group_search=fmc_api_get(url)
-if(group_search and group_search['items']):
+if("items" in group_search):
 	group_index=0
 	device_group_id=None
 	for dg in group_search['items']:
