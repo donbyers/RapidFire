@@ -79,7 +79,7 @@ time.sleep(2)
 
 #providing new password to sfr module
 print("Providing new admin password...")
-subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_password+"\r"+sfr_password+"\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff",sfr_password+"\r"+sfr_password+"\r"],stdout=subprocess.PIPE)
 time.sleep(10)
 
 #Accepting default config values
@@ -89,17 +89,17 @@ time.sleep(1)
 
 #Providing mgmt IP to sfr module
 print("Providing Mgmt IP to sfr module...")
-subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_ip+"\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff",sfr_ip+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
 
 #Providing subnet value for sfr module
 print("Providing sfr subnet mask...")
-subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_mask+"\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff",sfr_mask+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
 
 #Providing gateway IP for sfr module
 print("Providing gateway IP for sfr module...")
-subprocess.call(["screen","-S","cisco","-X","stuff",""+gateway_ip+"\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff",gateway_ip+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
 
 #Providing DNS IP for sfr module
@@ -109,7 +109,7 @@ time.sleep(1)
 
 #Providing domain name for sfr module
 print("Providing domain name for sfr module...")
-subprocess.call(["screen","-S","cisco","-X","stuff",""+sfr_domain+"\r"],stdout=subprocess.PIPE)
+subprocess.call(["screen","-S","cisco","-X","stuff",sfr_domain+"\r"],stdout=subprocess.PIPE)
 time.sleep(1)
 
 #Accepting agreeing to defaults to complete initial setup
